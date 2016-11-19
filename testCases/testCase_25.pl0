@@ -1,0 +1,7 @@
+var x;
+
+begin
+
+x := 65536;
+
+end.

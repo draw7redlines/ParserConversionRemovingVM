@@ -1,0 +1,5 @@
+var z, y;
+begin 
+	y := 0; 
+	while z > 5 do y := y + 1;
+end.

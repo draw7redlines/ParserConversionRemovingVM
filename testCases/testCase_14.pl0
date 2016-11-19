@@ -1,0 +1,7 @@
+var x;
+procedure label;
+begin
+x := 5;
+call 
+
+end.

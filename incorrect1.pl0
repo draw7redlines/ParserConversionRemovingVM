@@ -1,0 +1,4 @@
+var z;
+begin  
+	y := 6;
+end.

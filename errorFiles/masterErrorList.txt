@@ -1,0 +1,10 @@
+Error number 9, period expected.
+Error number 11, undeclared identifier.
+Error number 5, semicolon missing.
+Error number 8, incorrect symbol after statement part in block.
+Error number 20, Rational operator expected.
+Error number 16, then expected.
+Error number 4, var must be followed by identifier.
+Error number 3, Identifier must be followed by :=.
+Error number 18, ‘do’ expected.
+Error number 15, call must be followed by an identifier.

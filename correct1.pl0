@@ -1,0 +1,6 @@
+var z;
+begin 
+    read z; 
+	if z > 5 then z := 5;
+    write z;
+end.

@@ -1,0 +1,4 @@
+procedure; // tested with const and var
+begin 
+x;
+end.

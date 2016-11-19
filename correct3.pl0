@@ -1,0 +1,5 @@
+var z;
+begin
+	z := 10;
+	if z <> 5 then while z > 5 do z := z - 1; 
+end.

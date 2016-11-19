@@ -1,0 +1,4 @@
+var z;
+begin
+	if z then z = 5;
+end.

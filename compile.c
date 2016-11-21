@@ -4,10 +4,12 @@
 
 
 int main(int argc, char* argv[]){
+
+
 	char *args = malloc(sizeof(char) * 500);
 	strcat(args, "./compiler ");
 //	strcat(args, "make run -- ");
-	
+
 	int i=1;
 	for(;i<argc;i++){
 		strcat(args, " ");
@@ -17,6 +19,6 @@ int main(int argc, char* argv[]){
 	system( "gcc lexer.c parser.c vm.c -o compiler" );
 	system( args );
 	printf("\n");
-	
+
 	return 0;
 }

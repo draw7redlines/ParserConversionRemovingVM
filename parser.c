@@ -30,7 +30,7 @@ int address = 4;
 int lInArg = 0;
 int aInArg = 0;
 int vInArg = 0;
-int redundancyFlagForSpaghettiCode = 0;
+int redundancyFlagForCatchingEndsym = 0;
 
 int main(int argc, char **argv) {
 
@@ -96,6 +96,8 @@ int main(int argc, char **argv) {
         printf("\n");
         fclose(ofp);
     }
+
+
 
     return EXIT_SUCCESS;
 }//end of main function
@@ -199,7 +201,6 @@ void constDeclaration() {
 }//end of constDeclaration
 
 void varDeclaration() {
-    printf("the code saw a variable init \n");
     int numVariables = 0;
     int kind = 2;
     //var = 2 for the symbol table
@@ -246,7 +247,6 @@ void varDeclaration() {
         printf("Error number 5, semicolon missing.\n");
         error();
     }
-    printf("the code caught the semicolon ender \n");
     get_token();
 
 }//end of varDeclaration
@@ -296,7 +296,6 @@ void statement() {
 
     //identsym = 2
     if (token == identsym) {
-            printf("the code sees identsym\n");
         charray = (char *)malloc(12);
         fscanf( ifp, "%s\n ", charray );
         int k = find(charray);
@@ -317,17 +316,17 @@ void statement() {
             printf("Error number 3, Identifier must be followed by :=.\n");
             error();
         }
-        printf("the code saw becomesym \n");
 
+        //ugly fix for this not catching semicolons, but it works
+        assemblyCode(4, symbollevel(k), symboladdress(k));
         get_token();
-
         expression();
 
         if(token==semicolonsym){
-            printf("got to improvised catch \n");
             get_token();
             statement();
         }
+
 
         else{
 
@@ -341,7 +340,6 @@ void statement() {
     }
     //beginsym = 21
     else if (token == beginsym) {
-            printf("the code sees beginsym \n");
 
         address++;
         get_token();
@@ -349,7 +347,6 @@ void statement() {
 
         // Whike token is semicolon, keep reading statement
         while (token == semicolonsym) {
-            printf("the code sees semicolonsym \n");
             get_token();
             statement();
 
@@ -358,14 +355,9 @@ void statement() {
         //endsym = 22
         if (token != endsym) {
 
-            printf("The code wants an endsym \n");
             // not listed on pdf
-            printf("code op is... %d\n", code[cx-1].op);
-            printf("code l is...%d\n", code[cx-1].l);
-            printf("code m is...%d\n", code[cx-1].m);
 
-            printf("my redundancy flag is reading as %d \n", redundancyFlagForSpaghettiCode);
-            if(redundancyFlagForSpaghettiCode==0)
+            if(redundancyFlagForCatchingEndsym==0)
                 {
                     printf("Error: 'End' expected.\n");
                     error();
@@ -375,7 +367,6 @@ void statement() {
     }
     //ifsym = 23
     else if (token == ifsym) {
-        printf("the code sees ifsym\n");
 
         get_token();
         condition();
@@ -385,7 +376,6 @@ void statement() {
             printf("Error number 16, then expected.\n");
             error();
         }
-        printf("code saw the thensym \n");
 
         get_token();
         int ctemp = cx;
@@ -397,7 +387,6 @@ void statement() {
 
         //elsesym = 33
         if (token == elsesym) {
-                printf("the code sees elsesym\n");
             statement();
             get_token();
 
@@ -407,7 +396,6 @@ void statement() {
     }
     //whilesym= 25
     else if (token == whilesym) {
-            printf("the code sees whilesym\n");
         cx1 = cx;
 
         get_token();
@@ -424,7 +412,6 @@ void statement() {
         }
 
          else {
-                printf("the code saw the dosym\n");
             get_token();
         }
 
@@ -437,7 +424,6 @@ void statement() {
     //writesym = 31
     else if (token == writesym) {
 
-            printf("the code sees writesym \n");
 
         get_token();
         if (token != 2) {
@@ -471,7 +457,6 @@ void statement() {
     }
     //readsym = 32
     else if (token == readsym) {
-        printf("the code sees readsym \n");
         get_token();
         if (token != 2) {
             printf("Error number 15, call must be followed by an identifier.\n");
@@ -501,19 +486,19 @@ void statement() {
     }
 
     else if(token==writesym){
-        printf("the code sees writesym \n");
     }
 
+    //If we read an endsym then mark a global flag to keep a record
+    //this way when we return from the recursion and the original function
+    //doesn't find the endsym, we still can keep track that it's there!
     else if(token==endsym){
-        printf("got to improvised end catch \n");
-        redundancyFlagForSpaghettiCode = 1;
+        redundancyFlagForCatchingEndsym = 1;
         //break;
     }
 
 }//end of statement function
 
 void expression() {
-    printf("the spaghetti code went to expression now \n");
     //VM information:
     //OPR == 2 example: assemblyCode(OPR, 0, OPR_ADD || OPR_SUB)
     //OPR_ADD == 2
@@ -523,7 +508,6 @@ void expression() {
     //plussym = 4 -- adding_operator
 
     if (token == plussym || token == minussym) {
-            printf("it's reading as a plus or minus now\n");
         //minussym = 5
         op = token;
         get_token();
@@ -541,7 +525,6 @@ void expression() {
 
     //plussym = 4 -- adding_operator
     while (token == plussym || token == minussym) {
-            printf("The spaghetti code went to second case of plus and minus \n");
         //minussym = 5
         op = token;
         get_token();
@@ -558,11 +541,9 @@ void expression() {
             //printf("2 0 3\n");
         }
     }
-    printf("The expression function terminated now...\n");
 }//end of expression function
 
 void term() {
-    printf("the spaghetti code went to term now \n");
     //VM Information:
     //OPR = 2 example assemblyCode(OPR, 0, OPR_MUL)
     int op;
@@ -570,7 +551,6 @@ void term() {
 
     //multsym = 6 --- multiplying operator || slashsym = 7 -- division operator
     while (token == multsym || token == slashsym) {
-            printf("the code sees a mult or slash \n");
         op = token;
         get_token();
         factor();
@@ -592,10 +572,8 @@ void term() {
 void factor() {
     //identsym == 2
     if (token == identsym) {
-            printf("this ridiculous code went to identsym\n");
         charray = (char *)malloc(12);
         fscanf( ifp, "%s\n ", charray );
-        printf("processing %s on the memory now...\n", charray);
         int k = find(charray);
 
         if (k == -1) {
@@ -605,14 +583,12 @@ void factor() {
 
         //variable == 2
         if (symbolkind(k) == 2) {
-                printf("we got to variable\n");
             assemblyCode(3, symbollevel(k), symboladdress(k));
             //LOD == 3
             //printf("3 %d %d\n", symbollevel(k), symboladdress(k));
         }
         //constant ==1
         else if (symbolkind(k) == 1) {
-                printf("the code sees a constant now\n");
             assemblyCode(1, 0, symbolval(k));
             //LIT == 1
             //printf("1 0 %d\n", symbolval(k));
@@ -624,7 +600,6 @@ void factor() {
     }
     //its a number
     else if (token == 3) {
-            printf("the code sees a number now \n");
         fscanf(ifp, "%d", &number);
         assemblyCode(1, 0, number);
         //LIT == 1
@@ -650,16 +625,13 @@ void factor() {
 
 void condition() {
     //oddsym = 8
-    printf("got to condition\n");
     if (token == oddsym) {
-            printf("read to oddsym\n");
         get_token();
         expression();
         assemblyCode(2, 0, 6);
         //OPR == 2 --- ODD == 6
         //printf("2 0 6\n");
     } else {
-        printf("didn't read as oddsym \n");
         expression();
         //there are six relational operators
         //< (less than), <= (less than or equal to), > (greater than), >=, == (equal to),
@@ -669,7 +641,6 @@ void condition() {
             printf("Error number 20, Relational operator expected.\n");
             error();
         }
-        printf("the code saw a comparator\n");
         int k = find_symbol_type(token);
         get_token();
         expression();
@@ -710,7 +681,6 @@ void assemblyCode(int op, int l, int m) {
         code[cx].op = op;
         code[cx].l = l;
         code[cx].m = m;
-        printf("stack currently reads %d %d %d \n", code[cx].op, code[cx].l, code[cx].m);
         cx++;
     }
 }//end of assemblyCode function
